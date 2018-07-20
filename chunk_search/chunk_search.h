@@ -12,7 +12,7 @@ public:
     chunk_search(ForwardIterator1 pattern_first, ForwardIterator1 pattern_last)
         : pattern_first_m(pattern_first)
         , pattern_last_m(pattern_last)
-        , pattern_current_m(pattern_first)
+        , search_pattern_m(pattern_first)
     {}
 
     // returns true if pattern was found; in that case second will contain total offset, starting from
@@ -25,42 +25,48 @@ public:
             return std::make_pair(true, 0);
 
         const auto& result = partial_search(haystack_first, haystack_last);
-        pattern_current_m = result.second;
-        return std::make_pair(result.first != haystack_last, offset_m);
+        return std::make_pair(result != haystack_last, offset_m);
     }
 
     void reset()
     {
-        pattern_current_m = pattern_first_m;
+        search_pattern_m = pattern_first_m;
         offset_m = 0;
     }
 
 private:
     ForwardIterator1 pattern_first_m;
     ForwardIterator1 pattern_last_m;
-    ForwardIterator1 pattern_current_m;
+    ForwardIterator1 search_pattern_m;
     size_t offset_m{ 0 };
 
     template <typename ForwardIterator2>
-    std::pair<ForwardIterator2, ForwardIterator1> partial_search(ForwardIterator2 haystack_first, ForwardIterator2 haystack_last)
+    ForwardIterator2 partial_search(ForwardIterator2 haystack_first, ForwardIterator2 haystack_last)
     {
         while (haystack_first != haystack_last)
         {
             ForwardIterator2 haystack_it = haystack_first;
-            ForwardIterator1 pattern_it = pattern_current_m;
+            ForwardIterator1 pattern_it = search_pattern_m;
             while (*haystack_it == *pattern_it)
             {
                 ++pattern_it;
                 if (pattern_it == pattern_last_m)
-                    return std::make_pair(haystack_first, pattern_it);
+                {
+                    search_pattern_m = pattern_first_m; // reset to the start (if someone wants to search further)
+                    return haystack_first;
+                }
                 ++haystack_it;
-                if (haystack_it == haystack_last) 
-                    return std::make_pair(haystack_last, pattern_it);
+                if (haystack_it == haystack_last)
+                {
+                    search_pattern_m = pattern_it;
+                    return haystack_last;
+                }
             }
             ++haystack_first;
             ++offset_m;
         }
-        return std::make_pair(haystack_last, pattern_first_m);
+        search_pattern_m = pattern_first_m;
+        return haystack_last;
     }
 
 };
