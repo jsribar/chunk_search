@@ -235,5 +235,64 @@ namespace chunk_search_unit_tests
             auto found = cs.search(haystack.cbegin(), haystack.cend());
             Assert::AreEqual(size_t(3), found.second);
         }
-    };
+
+        TEST_METHOD(chunk_search_reverse_returns_true_when_pattern_is_identical_to_haystack)
+        {
+            std::string pattern{ "abc" };
+            chunk_search<std::string::const_reverse_iterator> cs{ pattern.crbegin(), pattern.crend() };
+            std::string haystack{ "abc" };
+            auto found = cs.search(haystack.crbegin(), haystack.crend());
+            Assert::IsTrue(found.first);
+        }
+
+        TEST_METHOD(chunk_search_reverse_returns_offset_0_is_identical_to_haystack)
+        {
+            std::string pattern{ "abc" };
+            chunk_search<std::string::const_reverse_iterator> cs{ pattern.crbegin(), pattern.crend() };
+            std::string haystack{ "abc" };
+            auto found = cs.search(haystack.crbegin(), haystack.crend());
+            Assert::AreEqual(size_t(0), found.second);
+        }
+
+        TEST_METHOD(chunk_search_reverse_returns_true_when_pattern_is_a_part_of_haystack)
+        {
+            std::string pattern{ "abc" };
+            chunk_search<std::string::const_reverse_iterator> cs{ pattern.crbegin(), pattern.crend() };
+            std::string haystack{ "01abc23" };
+            auto found = cs.search(haystack.crbegin(), haystack.crend());
+            Assert::IsTrue(found.first);
+        }
+ 
+        TEST_METHOD(chunk_search_reverse_returns_true_after_third_call_when_pattern_is_split_between_three_haystack_sections)
+        {
+            std::string pattern{ "abc" };
+            chunk_search<std::string::const_reverse_iterator> cs{ pattern.crbegin(), pattern.crend() };
+            std::string haystack{ "cd" };
+            cs.search(haystack.crbegin(), haystack.crend());
+
+            haystack = "b";
+            auto found = cs.search(haystack.crbegin(), haystack.crend());
+            Assert::IsFalse(found.first);
+
+            haystack = "a";
+            found = cs.search(haystack.crbegin(), haystack.crend());
+            Assert::IsTrue(found.first);
+        }
+
+        TEST_METHOD(chunk_search_reverse_returns_offset_1_after_third_call_when_pattern_is_split_between_three_haystack_sections)
+        {
+            std::string pattern{ "abc" };
+            chunk_search<std::string::const_reverse_iterator> cs{ pattern.crbegin(), pattern.crend() };
+            std::string haystack{ "cd" };
+            cs.search(haystack.crbegin(), haystack.crend());
+
+            haystack = "b";
+            auto found = cs.search(haystack.crbegin(), haystack.crend());
+            Assert::IsFalse(found.first);
+
+            haystack = "a";
+            found = cs.search(haystack.crbegin(), haystack.crend());
+            Assert::AreEqual(size_t(1), found.second);
+        }
+   };
 }
