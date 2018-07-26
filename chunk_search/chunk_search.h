@@ -4,7 +4,7 @@
 
 namespace core { namespace unpacker { namespace certutil {
 
-// utility class that allows to search for a pattern across 
+// utility class that allows to search for a pattern across several chunks
 template <typename ForwardIterator1>
 class chunk_search
 {
@@ -13,6 +13,13 @@ public:
         : pattern_first_m(pattern_first)
         , pattern_last_m(pattern_last)
         , search_pattern_m(pattern_first)
+    {}
+
+    template <typename T>
+    chunk_search(const T& pattern)
+        : pattern_first_m(std::begin(pattern))
+        , pattern_last_m(std::end(pattern))
+        , search_pattern_m(std::begin(pattern))
     {}
 
     template <typename ForwardIterator2>

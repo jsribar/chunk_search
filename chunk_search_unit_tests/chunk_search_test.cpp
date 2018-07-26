@@ -51,6 +51,15 @@ namespace chunk_search_unit_tests
             Assert::AreEqual(size_t(2), cs.total_offset());
         }
 
+        TEST_METHOD(chunk_search_string_pattern_returns_offset_when_pattern_is_a_part_of_haystack)
+        {
+            std::string pattern{ "abc" };
+            chunk_search<std::string::const_iterator> cs{ pattern };
+            std::string haystack{ "01abc23" };
+            auto found = cs.search(haystack.cbegin(), haystack.cend());
+            Assert::AreEqual(size_t(2), cs.total_offset());
+        }
+
         TEST_METHOD(chunk_search_returns_true_when_pattern_is_a_part_of_haystack_precedeed_with_partial_match)
         {
             std::string pattern{ "abc" };
