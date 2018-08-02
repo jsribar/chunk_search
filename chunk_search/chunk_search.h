@@ -53,15 +53,15 @@ private:
             while (*haystack_it == *pattern_it)
             {
                 ++pattern_it;
+                ++haystack_it;
                 if (pattern_it == pattern_last_m)
                 {
-                    search_pattern_m = pattern_first_m; // reset to the start (if someone wants to search further)
-                    return std::make_pair(haystack_first, ++haystack_it);
+                    search_pattern_m = pattern_first_m; // reset to the start (if someone wants to continue the search)
+                    return std::make_pair(haystack_first, haystack_it);
                 }
-                ++haystack_it;
                 if (haystack_it == haystack_last)
                 {
-                    search_pattern_m = pattern_it;
+                    search_pattern_m = pattern_it; // partial match, remember where stopped to continue on in the next chunk
                     return std::make_pair(haystack_last, haystack_last);
                 }
             }
