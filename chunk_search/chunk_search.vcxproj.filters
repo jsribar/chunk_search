@@ -24,6 +24,9 @@
     <ClInclude Include="chunk_search.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="chunk_search_composite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
