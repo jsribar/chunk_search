@@ -65,18 +65,46 @@ private:
                     return std::make_pair(false, haystack_last);
                 }
             }
+			// if a part was found in previous haystack, then matching part of previous haystack is actually in search pattern
+			// so start the search inside the pattern
+			if (match_length_m > size_t(haystack_it - haystack_first))
+			{
+				if (search_inside_pattern())
+					continue;
+			}
 			if (search_pattern_m == pattern_first_m)
-			{
 				++haystack_first;
-			}
-			else
-			{
-				search_pattern_m = pattern_first_m;
-			}
+			search_pattern_m = pattern_first_m;
 			match_length_m = 0;
 		}
         return std::make_pair(false, haystack_last);
     }
+
+	bool search_inside_pattern()
+	{
+		// start search from second position...
+		ForwardIterator1 search_from_it = pattern_first_m + 1;
+		// ...up to item found in previous haystack
+		while (search_from_it != search_pattern_m)
+		{
+			ForwardIterator1 pattern_it = pattern_first_m;
+			match_length_m = 0;
+			while (*pattern_it == *search_from_it)
+			{
+				++pattern_it;
+				++search_from_it;
+				++match_length_m;
+				// reached the end of search successfully
+				if (search_from_it == search_pattern_m)
+				{
+					search_pattern_m = pattern_it;
+					return true;
+				}
+			}
+			++search_from_it;
+		}
+		return false;
+	}
 
 };
 
