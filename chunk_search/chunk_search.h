@@ -31,12 +31,6 @@ public:
         return partial_search(haystack_first, haystack_last);
     }
 
-    // total offset from the first chunk
-    size_t total_offset() const noexcept
-    {
-        return total_offset_m;
-    }
-
 	size_t match_length() const noexcept
 	{
 		return match_length_m;
@@ -46,7 +40,6 @@ private:
     ForwardIterator1 pattern_first_m;
     ForwardIterator1 pattern_last_m;
     ForwardIterator1 search_pattern_m;
-    size_t total_offset_m{ 0 };
 	size_t match_length_m{ 0 };
 
     template <typename ForwardIterator2>
@@ -74,12 +67,10 @@ private:
             }
 			if (search_pattern_m == pattern_first_m)
 			{
-				++total_offset_m;
 				++haystack_first;
 			}
 			else
 			{
-				total_offset_m += match_length_m;
 				search_pattern_m = pattern_first_m;
 			}
 			match_length_m = 0;
