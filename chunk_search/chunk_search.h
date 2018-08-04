@@ -28,18 +28,13 @@ public:
 	explicit chunk_search(T&& pattern) = delete;
 
     template <typename ForwardIterator2>
-    std::pair<bool, ForwardIterator2> search(ForwardIterator2 haystack_first, ForwardIterator2 haystack_last)
+    std::pair<size_t, ForwardIterator2> search(ForwardIterator2 haystack_first, ForwardIterator2 haystack_last)
     {
         // if search pattern is empty, return immediately
         if (pattern_first_m == pattern_last_m)
-            return std::make_pair(true, haystack_first);
+            return std::make_pair(0, haystack_first);
         return partial_search(haystack_first, haystack_last);
     }
-
-	size_t match_length() const noexcept
-	{
-		return match_length_m;
-	}
 
 private:
 	const ForwardIterator1 pattern_first_m;
@@ -48,7 +43,7 @@ private:
 	size_t match_length_m{ 0 };
 
     template <typename ForwardIterator2>
-    std::pair<bool, ForwardIterator2> partial_search(ForwardIterator2 haystack_first, ForwardIterator2 haystack_last)
+    std::pair<size_t, ForwardIterator2> partial_search(ForwardIterator2 haystack_first, ForwardIterator2 haystack_last)
     {
 		while (haystack_first != haystack_last)
         {
@@ -62,12 +57,12 @@ private:
                 if (pattern_it == pattern_last_m)
                 {
                     search_pattern_m = pattern_first_m; // reset to the start (if someone wants to continue the search)
-                    return std::make_pair(true, haystack_it);
+                    return std::make_pair(match_length_m, haystack_it);
                 }
                 if (haystack_it == haystack_last)
                 {
                     search_pattern_m = pattern_it; // partial match, remember where stopped to continue on in the next chunk
-                    return std::make_pair(false, haystack_last);
+                    return std::make_pair(0, haystack_last);
                 }
             }
 			// if a part was found in previous haystack, then matching part of previous haystack is actually in search pattern
@@ -82,7 +77,7 @@ private:
 			search_pattern_m = pattern_first_m;
 			match_length_m = 0;
 		}
-        return std::make_pair(false, haystack_last);
+        return std::make_pair(0, haystack_last);
     }
 
 	bool search_inside_pattern()
