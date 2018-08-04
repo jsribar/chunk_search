@@ -44,7 +44,7 @@ public:
 		// if no match found, return immediately
 		if (successful.empty())
 			return std::make_pair(0, haystack_last);
-		// return match that came foremost
+		// return match that started foremost, if two started at same position, return the shorter one
 		return *std::min_element(successful.begin(), successful.end(), [&haystack_first](const auto& res1, const auto& res2) 
 		{ 
 			long res = res1.first - size_t(res1.second - haystack_first) - (res2.first - size_t(res2.second - haystack_first));
