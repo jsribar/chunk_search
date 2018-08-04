@@ -24,7 +24,7 @@
     <ClInclude Include="chunk_search.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="chunk_search_composite.h">
+    <ClInclude Include="composite_chunk_search.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

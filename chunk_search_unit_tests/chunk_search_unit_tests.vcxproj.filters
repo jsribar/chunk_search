@@ -29,5 +29,8 @@
     <ClCompile Include="chunk_search_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="composite_chunk_search_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
