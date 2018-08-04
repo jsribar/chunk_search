@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include <string>
 
 namespace core { namespace unpacker { namespace certutil {
 
@@ -16,11 +17,15 @@ public:
     {}
 
     template <typename T>
-    chunk_search(const T& pattern)
-        : pattern_first_m(std::begin(pattern))
-        , pattern_last_m(std::end(pattern))
-        , search_pattern_m(std::begin(pattern))
+    chunk_search(T& pattern)
+        : pattern_first_m(pattern.cbegin())
+        , pattern_last_m(pattern.cend())
+        , search_pattern_m(pattern.cbegin())
     {}
+
+	// prevent passing temporary objects
+	template <typename T>
+	explicit chunk_search(T&& pattern) = delete;
 
     template <typename ForwardIterator2>
     std::pair<bool, ForwardIterator2> search(ForwardIterator2 haystack_first, ForwardIterator2 haystack_last)
@@ -37,8 +42,8 @@ public:
 	}
 
 private:
-    ForwardIterator1 pattern_first_m;
-    ForwardIterator1 pattern_last_m;
+	const ForwardIterator1 pattern_first_m;
+    const ForwardIterator1 pattern_last_m;
     ForwardIterator1 search_pattern_m;
 	size_t match_length_m{ 0 };
 

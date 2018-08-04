@@ -17,8 +17,8 @@ namespace chunk_search_unit_tests
 		
 		TEST_METHOD(chunk_search_returns_true_when_pattern_is_identical_to_haystack)
 		{
-			std::string pattern{ "abc" };
-			chunk_search<std::string::const_iterator> cs{ pattern.cbegin(), pattern.cend() };
+			std::string pattern { "abc" };
+			chunk_search<std::string::const_iterator> cs{ pattern };
 			std::string haystack{ "abc" };
 			auto found = cs.search(haystack.cbegin(), haystack.cend());
 			Assert::IsTrue(found.first);
