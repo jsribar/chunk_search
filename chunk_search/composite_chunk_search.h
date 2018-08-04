@@ -16,12 +16,6 @@ class composite_chunk_search
 public:
 	composite_chunk_search() = default;
 
-	template <typename T>
-	composite_chunk_search(const T& patterns)
-	{
-		patterns_m.insert(patterns_m.end(), patterns.cbegin(), patterns.cend());
-	}
-
 	void add_pattern(ForwardIterator1 pattern_first, ForwardIterator1 pattern_last)
 	{
 		patterns_m.emplace_back(pattern_first, pattern_last);
@@ -51,7 +45,13 @@ public:
 		if (successful.empty())
 			return std::make_pair(0, haystack_last);
 		// return match that came foremost
-		return *std::min_element(successful.begin(), successful.end(), [&haystack_first](const auto& res1, const auto& res2) { return res1.first - size_t(res1.second - haystack_first) > res2.first - size_t(res2.second - haystack_first); });
+		return *std::min_element(successful.begin(), successful.end(), [&haystack_first](const auto& res1, const auto& res2) 
+		{ 
+			long res = res1.first - size_t(res1.second - haystack_first) - (res2.first - size_t(res2.second - haystack_first));
+			if (res != 0)
+				return res > 0;
+			return res1.first < res2.first;
+		});
 	}
 
 private:

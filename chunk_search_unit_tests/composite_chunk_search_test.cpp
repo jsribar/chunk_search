@@ -92,8 +92,28 @@ namespace composite_chunk_search_unit_tests
 			std::string haystack{ "bcabcde" };
 			auto found = cs.search(haystack.cbegin(), haystack.cend());
 
-			Assert::AreEqual(long(5), long(std::distance(haystack.cbegin(), found.second)));
 			Assert::AreEqual(size_t(3), found.first);
+			Assert::AreEqual(long(5), long(std::distance(haystack.cbegin(), found.second)));
 		}
+
+		TEST_METHOD(composite_chunk_search_returns_match_length_of_first_pattern_matched_entirely_when_all_patterns_are_part_of_haystack)
+		{
+			std::string pattern1{ "abcde" };
+			std::string pattern2{ "abcd" };
+			std::string pattern3{ "bcd" };
+			std::string pattern4{ "bcde" };
+			composite_chunk_search<std::string::const_iterator> cs;
+			cs.add_pattern(pattern1);
+			cs.add_pattern(pattern2);
+			cs.add_pattern(pattern3);
+			cs.add_pattern(pattern4);
+
+			std::string haystack{ "aaabcdef" };
+			auto found = cs.search(haystack.cbegin(), haystack.cend());
+
+			Assert::AreEqual(size_t(4), found.first);
+			Assert::AreEqual(long(6), long(std::distance(haystack.cbegin(), found.second)));
+		}
+
 	};
 }
