@@ -8,7 +8,6 @@
 
 namespace core { namespace unpacker { namespace certutil {
 
-
 template <typename ForwardIterator1>
 class composite_chunk_search
 {
@@ -41,16 +40,12 @@ public:
 			if (result.first > 0)
 				successful.push_back(result);
 		}
-		// if no match found, return immediately
 		if (successful.empty())
 			return std::make_pair(0, haystack_last);
-		// return match that started foremost, if two started at same position, return the shorter one
+		// return match that ends foremost and if two end at the same position, return the shorter one
 		return *std::min_element(successful.begin(), successful.end(), [&haystack_first](const auto& res1, const auto& res2) 
 		{ 
-			long res = res1.first - size_t(res1.second - haystack_first) - (res2.first - size_t(res2.second - haystack_first));
-			if (res != 0)
-				return res > 0;
-			return res1.first < res2.first;
+			return res1.second - res2.second ? res1.second < res2.second : res1.first > res2.first;
 		});
 	}
 

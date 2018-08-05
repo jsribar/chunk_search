@@ -105,7 +105,6 @@ private:
 		}
 		return false;
 	}
-
 };
 
 } } } // namespace core::unpacker::certutil
