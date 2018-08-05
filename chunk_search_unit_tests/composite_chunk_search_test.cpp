@@ -115,5 +115,41 @@ namespace composite_chunk_search_unit_tests
 			Assert::AreEqual(long(6), long(std::distance(haystack.cbegin(), found.second)));
 		}
 
+		TEST_METHOD(composite_chunk_search_returns_match_length_of_longest_pattern_for_patterns_that_have_same_end)
+		{
+			std::string pattern1{ "aaabcd" };
+			std::string pattern2{ "aabcd" };
+			std::string pattern3{ "abcd" };
+			composite_chunk_search<std::string::const_iterator> cs;
+			cs.add_pattern(pattern1);
+			cs.add_pattern(pattern2);
+			cs.add_pattern(pattern3);
+
+			std::string haystack{ "aaaabcdef" };
+			auto found = cs.search(haystack.cbegin(), haystack.cend());
+
+			Assert::AreEqual(size_t(6), found.first);
+			Assert::AreEqual(long(7), long(std::distance(haystack.cbegin(), found.second)));
+		}
+
+		TEST_METHOD(composite_chunk_search_returns_match_length_of_longest_pattern_for_patterns_that_have_same_end_when_patterns_are_split_in_2_haystacks_is_)
+		{
+			std::string pattern1{ "aaabcd" };
+			std::string pattern2{ "aabcd" };
+			std::string pattern3{ "abcd" };
+			composite_chunk_search<std::string::const_iterator> cs;
+			cs.add_pattern(pattern1);
+			cs.add_pattern(pattern2);
+			cs.add_pattern(pattern3);
+
+			std::string haystack{ "aa" };
+			auto found = cs.search(haystack.cbegin(), haystack.cend());
+
+			haystack = "abcdef";
+			found = cs.search(haystack.cbegin(), haystack.cend());
+
+			Assert::AreEqual(size_t(6), found.first);
+			Assert::AreEqual(long(4), long(std::distance(haystack.cbegin(), found.second)));
+		}
 	};
 }
