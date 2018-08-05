@@ -11,7 +11,7 @@ using namespace core::unpacker::certutil;
 
 namespace composite_chunk_search_unit_tests
 {
-	TEST_CLASS(CompositeChunkSearchTests)
+	TEST_CLASS(CompositeChunkSearch)
 	{
 	public:
 

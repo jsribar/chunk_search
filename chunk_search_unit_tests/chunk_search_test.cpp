@@ -11,7 +11,7 @@ using namespace core::unpacker::certutil;
 
 namespace chunk_search_unit_tests
 {		
-	TEST_CLASS(ChunkSearchTests)
+	TEST_CLASS(ChunkSearch)
 	{
 	public:
 		
