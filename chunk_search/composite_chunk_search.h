@@ -26,32 +26,40 @@
 #include <utility>
 #include <vector>
 
-template <typename ForwardIterator1>
+template <typename T = std::string>
 class composite_chunk_search
 {
-	using ChunkSearch = chunk_search<ForwardIterator1>;
+	using ChunkSearch = chunk_search<T>;
 public:
 	composite_chunk_search() = default;
 
-	void add_pattern(ForwardIterator1 pattern_first, ForwardIterator1 pattern_last)
+	template <typename C>
+	composite_chunk_search(C& patterns)
+	{
+		for (const auto& pattern : patterns)
+			patterns_m.emplace_back(pattern);
+	}
+
+	template <typename C>
+	composite_chunk_search(C&& patterns) = delete;
+
+	void add_pattern(typename T::const_iterator pattern_first, typename T::const_iterator pattern_last)
 	{
 		patterns_m.emplace_back(pattern_first, pattern_last);
 	}
 
-	template <typename T>
 	void add_pattern(T& pattern)
 	{
 		patterns_m.emplace_back(pattern);
 	}
 
 	// prevent passing temporary objects
-	template <typename T>
 	void add_pattern(T&& pattern) = delete;
 
-	template <typename ForwardIterator2>
-	std::pair<size_t, ForwardIterator2> search(ForwardIterator2 haystack_first, ForwardIterator2 haystack_last)
+	template <typename ForwardIterator>
+	std::pair<size_t, ForwardIterator> search(ForwardIterator haystack_first, ForwardIterator haystack_last)
 	{
-		std::vector<std::pair<size_t, ForwardIterator2>> successful;
+		std::vector<std::pair<size_t, ForwardIterator>> successful;
 		for (auto& pattern : patterns_m)
 		{
 			auto result = pattern.search(haystack_first, haystack_last);

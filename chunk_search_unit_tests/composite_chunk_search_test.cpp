@@ -14,7 +14,7 @@ namespace composite_chunk_search_unit_tests
 	public:
 		TEST_METHOD(ReturnsMatchLengthWhenOnePatternIsIdenticalToHaystack)
 		{
-			composite_chunk_search<std::string::const_iterator> cs;
+			composite_chunk_search<std::string> cs;
 			std::string pattern1{ "abc" };
 			cs.add_pattern(pattern1);
 			std::string pattern2{ "bcd" };
@@ -28,7 +28,7 @@ namespace composite_chunk_search_unit_tests
 
 		TEST_METHOD(ReturnsMatchLength0WhenNoneOfPatternsIsFoundInHaystack)
 		{
-			composite_chunk_search<std::string::const_iterator> cs;
+			composite_chunk_search<std::string> cs;
 			std::string pattern1{ "abc" };
 			cs.add_pattern(pattern1);
 			std::string pattern2{ "bcd" };
@@ -44,7 +44,7 @@ namespace composite_chunk_search_unit_tests
 
 		TEST_METHOD(ReturnsMatchLengthWhenOneOfPatternsIsPartOfHaystack)
 		{
-			composite_chunk_search<std::string::const_iterator> cs;
+			composite_chunk_search<std::string> cs;
 			std::string pattern1{ "abc" };
 			cs.add_pattern(pattern1);
 			std::string pattern2{ "bcd" };
@@ -60,7 +60,7 @@ namespace composite_chunk_search_unit_tests
 
 		TEST_METHOD(ReturnsIteratorToEndOfFoundWhenOneOfPatternsIsPartOfHaystack)
 		{
-			composite_chunk_search<std::string::const_iterator> cs;
+			composite_chunk_search<std::string> cs;
 			std::string pattern1{ "abc" };
 			cs.add_pattern(pattern1);
 			std::string pattern2{ "bcd" };
@@ -76,7 +76,7 @@ namespace composite_chunk_search_unit_tests
 
 		TEST_METHOD(ReturnsMatchLengthOfFoundWhenOneOfPatternsIsPartOfHaystack)
 		{
-			composite_chunk_search<std::string::const_iterator> cs;
+			composite_chunk_search<std::string> cs;
 			std::string pattern1{ "abc" };
 			cs.add_pattern(pattern1);
 			std::string pattern2{ "bcag" };
@@ -99,7 +99,7 @@ namespace composite_chunk_search_unit_tests
 			std::string pattern2{ "abcd" };
 			std::string pattern3{ "bcd" };
 			std::string pattern4{ "bcde" };
-			composite_chunk_search<std::string::const_iterator> cs;
+			composite_chunk_search<std::string> cs;
 			cs.add_pattern(pattern1);
 			cs.add_pattern(pattern2);
 			cs.add_pattern(pattern3);
@@ -117,7 +117,7 @@ namespace composite_chunk_search_unit_tests
 			std::string pattern1{ "aaabcd" };
 			std::string pattern2{ "aabcd" };
 			std::string pattern3{ "abcd" };
-			composite_chunk_search<std::string::const_iterator> cs;
+			composite_chunk_search<std::string> cs;
 			cs.add_pattern(pattern1);
 			cs.add_pattern(pattern2);
 			cs.add_pattern(pattern3);
@@ -134,7 +134,7 @@ namespace composite_chunk_search_unit_tests
 			std::string pattern1{ "aaabcd" };
 			std::string pattern2{ "aabcd" };
 			std::string pattern3{ "abcd" };
-			composite_chunk_search<std::string::const_iterator> cs;
+			composite_chunk_search<std::string> cs;
 			cs.add_pattern(pattern1);
 			cs.add_pattern(pattern2);
 			cs.add_pattern(pattern3);
@@ -151,7 +151,7 @@ namespace composite_chunk_search_unit_tests
 
 		TEST_METHOD(ReturnsMatchLengthWhenTheOnlyPatternIsIdenticalToHaystack)
 		{
-			composite_chunk_search<std::string::const_iterator> cs;
+			composite_chunk_search<std::string> cs;
 			std::string pattern{ "abc" };
 			cs.add_pattern(pattern);
 
@@ -163,7 +163,7 @@ namespace composite_chunk_search_unit_tests
 
 		TEST_METHOD(ReturnsMatchLength0WhenTheOnlyPatternsIsFoundInHaystack)
 		{
-			composite_chunk_search<std::string::const_iterator> cs;
+			composite_chunk_search<std::string> cs;
 			std::string pattern{ "abc" };
 			cs.add_pattern(pattern);
 
@@ -171,6 +171,19 @@ namespace composite_chunk_search_unit_tests
 			auto found = cs.search(haystack.cbegin(), haystack.cend());
 
 			Assert::AreEqual(size_t(0), found.first);
+		}
+
+
+		TEST_METHOD(ReturnsResultWhenPatternsAreProvidedAsCollectionToConstructor)
+		{
+			std::vector<std::string> patterns{ "abc", "bcd" };
+			composite_chunk_search<std::string> cs(patterns);
+
+			std::string haystack{ " abcd" };
+			auto found = cs.search(haystack.cbegin(), haystack.cend());
+
+			Assert::AreEqual(size_t(3), found.first);
+			Assert::AreEqual(long(4), long(std::distance(haystack.cbegin(), found.second)));
 		}
 	};
 }

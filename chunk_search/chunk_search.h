@@ -24,18 +24,18 @@
 #include <string>
 
 // utility class that allows to search for a pattern across several chunks
-template <typename ForwardIterator1>
+template <typename T = std::string>
 class chunk_search
 {
 public:
-    chunk_search(ForwardIterator1 pattern_first, ForwardIterator1 pattern_last)
+	chunk_search(typename T::const_iterator pattern_first, typename T::const_iterator pattern_last)
         : pattern_first_m(pattern_first)
         , pattern_last_m(pattern_last)
         , search_pattern_m(pattern_first)
     {}
 
-    template <typename T>
-    chunk_search(T& pattern)
+	template <typename T>
+	chunk_search(T& pattern)
         : pattern_first_m(pattern.cbegin())
         , pattern_last_m(pattern.cend())
         , search_pattern_m(pattern.cbegin())
@@ -45,8 +45,8 @@ public:
 	template <typename T>
 	explicit chunk_search(T&& pattern) = delete;
 
-    template <typename ForwardIterator2>
-    std::pair<size_t, ForwardIterator2> search(ForwardIterator2 haystack_first, ForwardIterator2 haystack_last)
+    template <typename ForwardIterator>
+    std::pair<size_t, ForwardIterator> search(ForwardIterator haystack_first, ForwardIterator haystack_last)
     {
         // if search pattern is empty, return immediately
         if (pattern_first_m == pattern_last_m)
@@ -55,18 +55,18 @@ public:
     }
 
 private:
-	const ForwardIterator1 pattern_first_m;
-    const ForwardIterator1 pattern_last_m;
-    ForwardIterator1 search_pattern_m;
+	const typename T::const_iterator pattern_first_m;
+    const typename T::const_iterator pattern_last_m;
+	typename T::const_iterator search_pattern_m;
 	size_t match_length_m{ 0 };
 
-    template <typename ForwardIterator2>
-    std::pair<size_t, ForwardIterator2> partial_search(ForwardIterator2 haystack_first, ForwardIterator2 haystack_last)
+    template <typename ForwardIterator>
+    std::pair<size_t, ForwardIterator> partial_search(ForwardIterator haystack_first, ForwardIterator haystack_last)
     {
 		while (haystack_first != haystack_last)
         {
-            ForwardIterator2 haystack_it = haystack_first;
-            ForwardIterator1 pattern_it = search_pattern_m;
+            ForwardIterator haystack_it = haystack_first;
+			typename T::const_iterator pattern_it = search_pattern_m;
             while (*haystack_it == *pattern_it)
             {
                 ++pattern_it;
@@ -101,11 +101,11 @@ private:
 	bool search_inside_pattern()
 	{
 		// start search from second position...
-		ForwardIterator1 search_from_it = pattern_first_m + 1;
+		typename T::const_iterator search_from_it = pattern_first_m + 1;
 		// ...up to item found in previous haystack
 		while (search_from_it != search_pattern_m)
 		{
-			ForwardIterator1 pattern_it = pattern_first_m;
+			typename T::const_iterator pattern_it = pattern_first_m;
 			match_length_m = 0;
 			while (*pattern_it == *search_from_it)
 			{
