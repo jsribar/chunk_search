@@ -7,15 +7,12 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-using namespace core::unpacker::certutil;
-
 namespace composite_chunk_search_unit_tests
 {
 	TEST_CLASS(CompositeChunkSearch)
 	{
 	public:
-
-		TEST_METHOD(composite_chunk_search_returns_match_length_when_one_pattern_is_identical_to_haystack)
+		TEST_METHOD(ReturnsMatchLengthWhenOnePatternIsIdenticalToHaystack)
 		{
 			composite_chunk_search<std::string::const_iterator> cs;
 			std::string pattern1{ "abc" };
@@ -29,7 +26,7 @@ namespace composite_chunk_search_unit_tests
 			Assert::AreEqual(size_t(3), found.first);
 		}
 
-		TEST_METHOD(composite_chunk_search_returns_match_length_0_when_none_of_patterns_is_found_in_haystack)
+		TEST_METHOD(ReturnsMatchLength0WhenNoneOfPatternsIsFoundInHaystack)
 		{
 			composite_chunk_search<std::string::const_iterator> cs;
 			std::string pattern1{ "abc" };
@@ -45,7 +42,7 @@ namespace composite_chunk_search_unit_tests
 			Assert::AreEqual(size_t(0), found.first);
 		}
 
-		TEST_METHOD(composite_chunk_search_returns_match_length_when_one_of_patterns_is_part_of_haystack)
+		TEST_METHOD(ReturnsMatchLengthWhenOneOfPatternsIsPartOfHaystack)
 		{
 			composite_chunk_search<std::string::const_iterator> cs;
 			std::string pattern1{ "abc" };
@@ -61,7 +58,7 @@ namespace composite_chunk_search_unit_tests
 			Assert::AreEqual(size_t(3), found.first);
 		}
 
-		TEST_METHOD(composite_chunk_search_returns_iterator_to_end_of_found_when_one_of_patterns_is_part_of_haystack)
+		TEST_METHOD(ReturnsIteratorToEndOfFoundWhenOneOfPatternsIsPartOfHaystack)
 		{
 			composite_chunk_search<std::string::const_iterator> cs;
 			std::string pattern1{ "abc" };
@@ -77,7 +74,7 @@ namespace composite_chunk_search_unit_tests
 			Assert::AreEqual(long(5), long(std::distance(haystack.cbegin(), found.second)));
 		}
 
-		TEST_METHOD(composite_chunk_search_returns_match_length_of_found_when_one_of_patterns_is_part_of_haystack)
+		TEST_METHOD(ReturnsMatchLengthOfFoundWhenOneOfPatternsIsPartOfHaystack)
 		{
 			composite_chunk_search<std::string::const_iterator> cs;
 			std::string pattern1{ "abc" };
@@ -96,7 +93,7 @@ namespace composite_chunk_search_unit_tests
 			Assert::AreEqual(long(5), long(std::distance(haystack.cbegin(), found.second)));
 		}
 
-		TEST_METHOD(composite_chunk_search_returns_match_length_of_first_pattern_matched_entirely_when_all_patterns_are_part_of_haystack)
+		TEST_METHOD(ReturnsMatchLengthOfFirstPatternMatchedEntirelyWhenAllPatternsArePartOfHaystack)
 		{
 			std::string pattern1{ "abcde" };
 			std::string pattern2{ "abcd" };
@@ -115,7 +112,7 @@ namespace composite_chunk_search_unit_tests
 			Assert::AreEqual(long(6), long(std::distance(haystack.cbegin(), found.second)));
 		}
 
-		TEST_METHOD(composite_chunk_search_returns_match_length_of_longest_pattern_for_patterns_that_have_same_end)
+		TEST_METHOD(ReturnsMatchLengthOfLongestPatternForPatternsThatHaveSameEnd)
 		{
 			std::string pattern1{ "aaabcd" };
 			std::string pattern2{ "aabcd" };
@@ -132,7 +129,7 @@ namespace composite_chunk_search_unit_tests
 			Assert::AreEqual(long(7), long(std::distance(haystack.cbegin(), found.second)));
 		}
 
-		TEST_METHOD(composite_chunk_search_returns_match_length_of_longest_pattern_for_patterns_that_have_same_end_when_patterns_are_split_in_2_haystacks_is_)
+		TEST_METHOD(ReturnsMatchLengthOfLongestPatternForPatternsThatHaveSameEndWhenPatternsAreSplitIn2Haystacks)
 		{
 			std::string pattern1{ "aaabcd" };
 			std::string pattern2{ "aabcd" };
@@ -152,7 +149,7 @@ namespace composite_chunk_search_unit_tests
 			Assert::AreEqual(long(4), long(std::distance(haystack.cbegin(), found.second)));
 		}
 
-		TEST_METHOD(composite_chunk_search_returns_match_length_when_the_only_pattern_is_identical_to_haystack)
+		TEST_METHOD(ReturnsMatchLengthWhenTheOnlyPatternIsIdenticalToHaystack)
 		{
 			composite_chunk_search<std::string::const_iterator> cs;
 			std::string pattern{ "abc" };
@@ -164,7 +161,7 @@ namespace composite_chunk_search_unit_tests
 			Assert::AreEqual(size_t(3), found.first);
 		}
 
-		TEST_METHOD(composite_chunk_search_returns_match_length_0_when_the_only_patterns_is_found_in_haystack)
+		TEST_METHOD(ReturnsMatchLength0WhenTheOnlyPatternsIsFoundInHaystack)
 		{
 			composite_chunk_search<std::string::const_iterator> cs;
 			std::string pattern{ "abc" };
@@ -175,6 +172,5 @@ namespace composite_chunk_search_unit_tests
 
 			Assert::AreEqual(size_t(0), found.first);
 		}
-
 	};
 }
