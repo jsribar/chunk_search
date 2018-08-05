@@ -29,7 +29,7 @@ namespace composite_chunk_search_unit_tests
 			Assert::AreEqual(size_t(3), found.first);
 		}
 
-		TEST_METHOD(composite_chunk_search_returns_match_length_0_when_none_of_patterns_is_identical_to_haystack)
+		TEST_METHOD(composite_chunk_search_returns_match_length_0_when_none_of_patterns_is_found_in_haystack)
 		{
 			composite_chunk_search<std::string::const_iterator> cs;
 			std::string pattern1{ "abc" };
@@ -151,5 +151,30 @@ namespace composite_chunk_search_unit_tests
 			Assert::AreEqual(size_t(6), found.first);
 			Assert::AreEqual(long(4), long(std::distance(haystack.cbegin(), found.second)));
 		}
+
+		TEST_METHOD(composite_chunk_search_returns_match_length_when_the_only_pattern_is_identical_to_haystack)
+		{
+			composite_chunk_search<std::string::const_iterator> cs;
+			std::string pattern{ "abc" };
+			cs.add_pattern(pattern);
+
+			std::string haystack{ "abc" };
+			auto found = cs.search(haystack.cbegin(), haystack.cend());
+
+			Assert::AreEqual(size_t(3), found.first);
+		}
+
+		TEST_METHOD(composite_chunk_search_returns_match_length_0_when_the_only_patterns_is_found_in_haystack)
+		{
+			composite_chunk_search<std::string::const_iterator> cs;
+			std::string pattern{ "abc" };
+			cs.add_pattern(pattern);
+
+			std::string haystack{ "cbc" };
+			auto found = cs.search(haystack.cbegin(), haystack.cend());
+
+			Assert::AreEqual(size_t(0), found.first);
+		}
+
 	};
 }
