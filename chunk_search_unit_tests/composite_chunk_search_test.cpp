@@ -176,7 +176,7 @@ namespace composite_chunk_search_unit_tests
 
 		TEST_METHOD(ReturnsResultWhenPatternsAreProvidedAsCollectionToConstructor)
 		{
-			std::vector<std::string> patterns{ "abc", "bcd" };
+			const std::vector<std::string> patterns{ "abc", "bcd" };
 			composite_chunk_search<std::string> cs(patterns);
 
 			std::string haystack{ " abcd" };

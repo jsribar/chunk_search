@@ -34,7 +34,7 @@ public:
 	composite_chunk_search() = default;
 
 	template <typename C>
-	composite_chunk_search(C& patterns)
+	composite_chunk_search(const C& patterns)
 	{
 		for (const auto& pattern : patterns)
 			patterns_m.emplace_back(pattern);
@@ -46,12 +46,12 @@ public:
 
 	void add_pattern(typename T::const_iterator pattern_first, typename T::const_iterator pattern_last)
 	{
-		patterns_m.emplace_back(pattern_first, pattern_last);
+		patterns_m.push_back(pattern_first, pattern_last);
 	}
 
-	void add_pattern(T& pattern)
+	void add_pattern(const T& pattern)
 	{
-		patterns_m.emplace_back(pattern);
+		patterns_m.push_back(pattern);
 	}
 
 	// prevent passing temporary objects

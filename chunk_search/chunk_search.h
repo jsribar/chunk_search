@@ -34,16 +34,14 @@ public:
         , search_pattern_m(pattern_first)
     {}
 
-	template <typename T>
-	chunk_search(T& pattern)
+    chunk_search(const T& pattern)
         : pattern_first_m(pattern.cbegin())
         , pattern_last_m(pattern.cend())
         , search_pattern_m(pattern.cbegin())
     {}
-
-	// prevent passing temporary objects
-	template <typename T>
-	explicit chunk_search(T&& pattern) = delete;
+    
+    // prevent passing temporary objects
+	chunk_search(T&& pattern) = delete;
 
     template <typename ForwardIterator>
     std::pair<size_t, ForwardIterator> search(ForwardIterator haystack_first, ForwardIterator haystack_last)
@@ -55,8 +53,8 @@ public:
     }
 
 private:
-	const typename T::const_iterator pattern_first_m;
-    const typename T::const_iterator pattern_last_m;
+	typename T::const_iterator pattern_first_m;
+    typename T::const_iterator pattern_last_m;
 	typename T::const_iterator search_pattern_m;
 	size_t match_length_m{ 0 };
 
