@@ -33,29 +33,40 @@ class composite_chunk_search
 public:
 	composite_chunk_search() = default;
 
+    composite_chunk_search(std::initializer_list<T> patterns)
+    {
+        for (const auto& pattern : patterns)
+            patterns_m.push_back(pattern);
+    }
+
 	template <typename C>
 	composite_chunk_search(const C& patterns)
 	{
 		for (const auto& pattern : patterns)
-			patterns_m.emplace_back(pattern);
+			patterns_m.push_back(pattern);
 	}
 
-	// prevent passing temporary objects
-	template <typename C>
-	composite_chunk_search(C&& patterns) = delete;
+    composite_chunk_search& operator=(composite_chunk_search<T>&& search)
+    {
+        patterns_m.clear();
+        for (auto& pattern : search.patterns_m)
+            patterns_m.push_back(std::move(pattern));
+        return *this;
+    }
 
-	void add_pattern(typename T::const_iterator pattern_first, typename T::const_iterator pattern_last)
-	{
-		patterns_m.push_back(pattern_first, pattern_last);
-	}
+    // disable copying
+    composite_chunk_search(const composite_chunk_search&) = delete;
+    composite_chunk_search& operator=(const composite_chunk_search<T>&) = delete;
 
 	void add_pattern(const T& pattern)
 	{
 		patterns_m.push_back(pattern);
 	}
 
-	// prevent passing temporary objects
-	void add_pattern(T&& pattern) = delete;
+    void add_pattern(T&& pattern)
+    {
+        patterns_m.push_back(std::move(pattern));
+    }
 
 	template <typename ForwardIterator>
 	std::pair<size_t, ForwardIterator> search(ForwardIterator haystack_first, ForwardIterator haystack_last)

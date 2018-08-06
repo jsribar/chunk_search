@@ -28,34 +28,46 @@ template <typename T = std::string>
 class chunk_search
 {
 public:
-	chunk_search(typename T::const_iterator pattern_first, typename T::const_iterator pattern_last)
-        : pattern_first_m(pattern_first)
-        , pattern_last_m(pattern_last)
-        , search_pattern_m(pattern_first)
-    {}
-
     chunk_search(const T& pattern)
-        : pattern_first_m(pattern.cbegin())
-        , pattern_last_m(pattern.cend())
-        , search_pattern_m(pattern.cbegin())
+        : pattern_m{ pattern }
+        , partial_match_end_m{ pattern_m.begin() }
     {}
     
-    // prevent passing temporary objects
-	chunk_search(T&& pattern) = delete;
+	chunk_search(T&& pattern)
+        : pattern_m{ std::move(pattern) }
+        , partial_match_end_m{ pattern_m.begin() }
+    {}
+
+    chunk_search(chunk_search<T>&& search)
+    {
+        std::swap(pattern_m, search.pattern_m);
+        partial_match_end_m = pattern_m.begin();
+    }
+
+    chunk_search& operator=(chunk_search<T>&& search)
+    {
+        std::swap(pattern_m, search.pattern_m);
+        partial_match_end_m = pattern_m.begin();
+        match_length_m = 0;
+        return *this;
+    }
+
+    // disable copying
+    chunk_search(const chunk_search<T>&) = delete;
+    chunk_search& operator=(const chunk_search<T>&) = delete;
 
     template <typename ForwardIterator>
     std::pair<size_t, ForwardIterator> search(ForwardIterator haystack_first, ForwardIterator haystack_last)
     {
         // if search pattern is empty, return immediately
-        if (pattern_first_m == pattern_last_m)
+        if (pattern_m.begin() == pattern_m.end())
             return std::make_pair(0, haystack_first);
         return partial_search(haystack_first, haystack_last);
     }
 
 private:
-	typename T::const_iterator pattern_first_m;
-    typename T::const_iterator pattern_last_m;
-	typename T::const_iterator search_pattern_m;
+    T pattern_m;
+	typename T::const_iterator partial_match_end_m;
 	size_t match_length_m{ 0 };
 
     template <typename ForwardIterator>
@@ -64,20 +76,22 @@ private:
 		while (haystack_first != haystack_last)
         {
             ForwardIterator haystack_it = haystack_first;
-			typename T::const_iterator pattern_it = search_pattern_m;
+			typename T::const_iterator pattern_it = partial_match_end_m;
             while (*haystack_it == *pattern_it)
             {
                 ++pattern_it;
                 ++haystack_it;
 				++match_length_m;
-                if (pattern_it == pattern_last_m)
+                if (pattern_it == pattern_m.end())
                 {
-                    search_pattern_m = pattern_first_m; // reset to the start (if someone wants to continue the search)
-                    return std::make_pair(match_length_m, haystack_it);
+                    const auto& result = std::make_pair(match_length_m, haystack_it);
+                    partial_match_end_m = pattern_m.begin(); // reset if someone wants to continue the search
+                    match_length_m = 0;
+                    return result;
                 }
                 if (haystack_it == haystack_last)
                 {
-                    search_pattern_m = pattern_it; // partial match, remember where stopped to continue on in the next chunk
+                    partial_match_end_m = pattern_it; // partial match, remember where stopped to continue on in the next chunk
                     return std::make_pair(0, haystack_last);
                 }
             }
@@ -88,9 +102,9 @@ private:
 				if (search_inside_pattern())
 					continue;
 			}
-			if (search_pattern_m == pattern_first_m)
+			if (partial_match_end_m == pattern_m.begin())
 				++haystack_first;
-			search_pattern_m = pattern_first_m;
+			partial_match_end_m = pattern_m.begin();
 			match_length_m = 0;
 		}
         return std::make_pair(0, haystack_last);
@@ -99,11 +113,11 @@ private:
 	bool search_inside_pattern()
 	{
 		// start search from second position...
-		typename T::const_iterator search_from_it = pattern_first_m + 1;
+		typename T::const_iterator search_from_it = pattern_m.begin() + 1;
 		// ...up to item found in previous haystack
-		while (search_from_it != search_pattern_m)
+		while (search_from_it != partial_match_end_m)
 		{
-			typename T::const_iterator pattern_it = pattern_first_m;
+			typename T::const_iterator pattern_it = pattern_m.begin();
 			match_length_m = 0;
 			while (*pattern_it == *search_from_it)
 			{
@@ -111,9 +125,9 @@ private:
 				++search_from_it;
 				++match_length_m;
 				// reached the end of search successfully
-				if (search_from_it == search_pattern_m)
+				if (search_from_it == partial_match_end_m)
 				{
-					search_pattern_m = pattern_it;
+					partial_match_end_m = pattern_it;
 					return true;
 				}
 			}
