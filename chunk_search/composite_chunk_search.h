@@ -36,21 +36,21 @@ public:
     composite_chunk_search(std::initializer_list<T> patterns)
     {
         for (const auto& pattern : patterns)
-            patterns_m.push_back(pattern);
+            searches_m.push_back(pattern);
     }
 
 	template <typename C>
-	composite_chunk_search(const C& patterns)
+	composite_chunk_search(const C& searches)
 	{
-		for (const auto& pattern : patterns)
-			patterns_m.push_back(pattern);
+		for (const auto& search : searches)
+			searches_m.push_back(search);
 	}
 
     composite_chunk_search& operator=(composite_chunk_search<T>&& search)
     {
-        patterns_m.clear();
-        for (auto& pattern : search.patterns_m)
-            patterns_m.push_back(std::move(pattern));
+        searches_m.clear();
+        for (auto& pattern : search.searches_m)
+            searches_m.push_back(std::move(pattern));
         return *this;
     }
 
@@ -60,21 +60,21 @@ public:
 
 	void add_pattern(const T& pattern)
 	{
-		patterns_m.push_back(pattern);
+		searches_m.emplace_back(pattern);
 	}
 
     void add_pattern(T&& pattern)
     {
-        patterns_m.push_back(std::move(pattern));
+        searches_m.emplace_back(std::move(pattern));
     }
 
 	template <typename ForwardIterator>
 	std::pair<size_t, ForwardIterator> search(ForwardIterator haystack_first, ForwardIterator haystack_last)
 	{
 		std::vector<std::pair<size_t, ForwardIterator>> successful;
-		for (auto& pattern : patterns_m)
+		for (auto& search : searches_m)
 		{
-			auto result = pattern.search(haystack_first, haystack_last);
+			auto result = search.search(haystack_first, haystack_last);
 			if (result.first > 0)
 				successful.push_back(result);
 		}
@@ -88,5 +88,5 @@ public:
 	}
 
 private:
-	std::vector<ChunkSearch> patterns_m;
+	std::vector<ChunkSearch> searches_m;
 };
