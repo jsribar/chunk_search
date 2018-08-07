@@ -33,40 +33,47 @@ class composite_chunk_search
 public:
 	composite_chunk_search() = default;
 
-    composite_chunk_search(std::initializer_list<T> patterns)
-    {
-        for (const auto& pattern : patterns)
-            searches_m.push_back(pattern);
-    }
-
-	template <typename C>
-	composite_chunk_search(const C& searches)
+	composite_chunk_search(std::initializer_list<T> patterns)
 	{
-		for (const auto& search : searches)
-			searches_m.push_back(search);
+		for (const auto& pattern : patterns)
+			searches_m.emplace_back(std::move(pattern));
 	}
 
-    composite_chunk_search& operator=(composite_chunk_search<T>&& search)
-    {
-        searches_m.clear();
-        for (auto& pattern : search.searches_m)
-            searches_m.push_back(std::move(pattern));
-        return *this;
-    }
+	template <typename C>
+	composite_chunk_search(const C& patterns)
+	{
+		for (const auto& pattern : patterns)
+			searches_m.emplace_back(pattern);
+	}
 
-    // disable copying
-    composite_chunk_search(const composite_chunk_search&) = delete;
-    composite_chunk_search& operator=(const composite_chunk_search<T>&) = delete;
+	template <typename C>
+	composite_chunk_search(C&& patterns)
+	{
+		for (const auto& pattern : patterns)
+			searches_m.emplace_back(std::move(pattern));
+	}
+
+	composite_chunk_search& operator=(composite_chunk_search<T>&& search)
+	{
+		searches_m.clear();
+		for (auto& pattern : search.searches_m)
+			searches_m.push_back(std::move(pattern));
+		return *this;
+	}
+
+	// disable copying
+	composite_chunk_search(const composite_chunk_search&) = delete;
+	composite_chunk_search& operator=(const composite_chunk_search<T>&) = delete;
 
 	void add_pattern(const T& pattern)
 	{
 		searches_m.emplace_back(pattern);
 	}
 
-    void add_pattern(T&& pattern)
-    {
-        searches_m.emplace_back(std::move(pattern));
-    }
+	void add_pattern(T&& pattern)
+	{
+		searches_m.emplace_back(std::move(pattern));
+	}
 
 	template <typename ForwardIterator>
 	std::pair<size_t, ForwardIterator> search(ForwardIterator haystack_first, ForwardIterator haystack_last)
@@ -81,8 +88,8 @@ public:
 		if (successful.empty())
 			return std::make_pair(0, haystack_last);
 		// return match that ends foremost and if two end at the same position, return the shorter one
-		return *std::min_element(successful.begin(), successful.end(), [&haystack_first](const auto& res1, const auto& res2) 
-		{ 
+		return *std::min_element(successful.begin(), successful.end(), [&haystack_first](const auto& res1, const auto& res2)
+		{
 			return res1.second - res2.second ? res1.second < res2.second : res1.first > res2.first;
 		});
 	}
