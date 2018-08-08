@@ -76,21 +76,21 @@ public:
 	}
 
 	template <typename ForwardIterator>
-	std::pair<size_t, ForwardIterator> search(ForwardIterator haystack_first, ForwardIterator haystack_last)
+	chunk_search_result<ForwardIterator> search(ForwardIterator haystack_first, ForwardIterator haystack_last)
 	{
-		std::vector<std::pair<size_t, ForwardIterator>> successful;
+		std::vector<chunk_search_result<ForwardIterator>> successful;
 		for (auto& search : searches_m)
 		{
 			auto result = search.search(haystack_first, haystack_last);
-			if (result.first > 0)
+			if (result.match_length > 0)
 				successful.push_back(result);
 		}
 		if (successful.empty())
-			return std::make_pair(0, haystack_last);
+            return chunk_search_result<ForwardIterator>{ 0, haystack_last };
 		// return match that ends foremost and if two end at the same position, return the shorter one
 		return *std::min_element(successful.begin(), successful.end(), [&haystack_first](const auto& res1, const auto& res2)
 		{
-			return res1.second - res2.second ? res1.second < res2.second : res1.first > res2.first;
+			return res1.end - res2.end ? res1.end < res2.end : res1.match_length > res2.match_length;
 		});
 	}
 

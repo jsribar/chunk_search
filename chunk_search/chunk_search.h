@@ -23,6 +23,18 @@
 #include <utility>
 #include <string>
 
+template <typename ForwardIterator>
+struct chunk_search_result
+{
+    size_t match_length;
+    ForwardIterator end;
+
+    chunk_search_result(size_t ml, ForwardIterator it)
+        : match_length(ml)
+        , end(it)
+    {}
+};
+
 // utility class that allows to search for a pattern across several chunks
 template <typename T = std::string>
 class chunk_search
@@ -52,11 +64,11 @@ public:
 	chunk_search& operator=(const chunk_search<T>&) = delete;
 
 	template <typename ForwardIterator>
-	std::pair<size_t, ForwardIterator> search(ForwardIterator haystack_first, ForwardIterator haystack_last)
+    chunk_search_result<ForwardIterator> search(ForwardIterator haystack_first, ForwardIterator haystack_last)
 	{
 		// if search pattern is empty, return immediately
 		if (pattern_m.begin() == pattern_m.end())
-			return std::make_pair(0, haystack_first);
+            return chunk_search_result<ForwardIterator>{ 0, haystack_first };
 		return partial_search(haystack_first, haystack_last);
 	}
 
@@ -66,7 +78,7 @@ private:
 	size_t match_length_m{ 0 };
 
 	template <typename ForwardIterator>
-	std::pair<size_t, ForwardIterator> partial_search(ForwardIterator haystack_first, ForwardIterator haystack_last)
+    chunk_search_result<ForwardIterator> partial_search(ForwardIterator haystack_first, ForwardIterator haystack_last)
 	{
 		while (haystack_first != haystack_last)
 		{
@@ -79,7 +91,7 @@ private:
 				++match_length_m;
 				if (pattern_it == pattern_m.end())
 				{
-					const auto& result = std::make_pair(match_length_m, haystack_it);
+                    const auto& result = chunk_search_result<ForwardIterator>{ match_length_m, haystack_it };
 					partial_match_end_m = pattern_m.begin(); // reset if someone wants to continue the search
 					match_length_m = 0;
 					return result;
@@ -87,7 +99,7 @@ private:
 				if (haystack_it == haystack_last)
 				{
 					partial_match_end_m = pattern_it; // partial match, remember where stopped to continue on in the next chunk
-					return std::make_pair(0, haystack_last);
+                    return chunk_search_result<ForwardIterator>{ 0, haystack_last };
 				}
 			}
 			// if a part was found in previous haystack, then matching part of previous haystack is actually in search pattern
@@ -102,7 +114,7 @@ private:
 			partial_match_end_m = pattern_m.begin();
 			match_length_m = 0;
 		}
-		return std::make_pair(0, haystack_last);
+        return chunk_search_result<ForwardIterator>{ 0, haystack_last };
 	}
 
 	bool search_inside_pattern()
