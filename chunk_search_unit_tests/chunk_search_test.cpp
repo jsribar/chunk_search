@@ -3,8 +3,6 @@
 
 #include "../chunk_search/chunk_search.h"
 
-#include <string>
-
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace chunk_search_unit_tests

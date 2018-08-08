@@ -3,8 +3,6 @@
 
 #include "../chunk_search/composite_chunk_search.h"
 
-#include <string>
-
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace composite_chunk_search_unit_tests

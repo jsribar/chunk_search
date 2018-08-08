@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include <utility>
 #include <string>
 
 template <typename ForwardIterator>

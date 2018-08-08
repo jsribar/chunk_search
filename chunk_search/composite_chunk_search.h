@@ -23,7 +23,6 @@
 #include "chunk_search.h"
 
 #include <algorithm>
-#include <utility>
 #include <vector>
 
 template <typename T = std::string>
