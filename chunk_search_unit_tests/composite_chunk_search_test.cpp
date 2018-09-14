@@ -146,5 +146,32 @@ namespace composite_chunk_search_unit_tests
 			Assert::AreEqual(size_t(4), found.match_length);
 			Assert::AreEqual(long(5), long(std::distance(haystack2.cbegin(), found.end)));
 		}
+
+        TEST_METHOD(ReturnsIteratorToStartOfPartialMatchAtEnd)
+        {
+            composite_chunk_search<std::string> ccs({ "aba", "cde", "beg" });
+
+            std::string haystack{ "abc" };
+            auto found = ccs.search(haystack.cbegin(), haystack.cend());
+
+            Assert::AreEqual(long(2), long(std::distance(haystack.cbegin(), found.start)));
+
+            Assert::AreEqual(long(3), long(std::distance(haystack.cbegin(), found.end)));
+            Assert::AreEqual(size_t(0), found.match_length);
+        }
+
+        TEST_METHOD(ReturnsIteratorToEndOfHaystackIfPartialMatchIsInMiddle)
+        {
+            composite_chunk_search<std::string> ccs({ "aba", "cde", "beg" });
+
+            std::string haystack{ "abce" };
+            auto found = ccs.search(haystack.cbegin(), haystack.cend());
+
+            Assert::AreEqual(long(4), long(std::distance(haystack.cbegin(), found.start)));
+
+            Assert::AreEqual(long(4), long(std::distance(haystack.cbegin(), found.end)));
+            Assert::AreEqual(size_t(0), found.match_length);
+        }
+
 	};
 }

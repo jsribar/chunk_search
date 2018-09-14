@@ -78,14 +78,17 @@ public:
 	chunk_search_result<ForwardIterator> search(ForwardIterator haystack_first, ForwardIterator haystack_last)
 	{
 		std::vector<chunk_search_result<ForwardIterator>> successful;
+        ForwardIterator foremost = haystack_last;
 		for (auto& search : searches_m)
 		{
 			auto result = search.search(haystack_first, haystack_last);
 			if (result.match_length > 0)
 				successful.push_back(result);
+            if (foremost > result.start)
+                foremost = result.start;
 		}
 		if (successful.empty())
-            return chunk_search_result<ForwardIterator>{ 0, haystack_last };
+            return chunk_search_result<ForwardIterator>{ 0, foremost, haystack_last };
 		// return match that ends foremost and if two end at the same position, return the shorter one
 		return *std::min_element(successful.begin(), successful.end(), [&haystack_first](const auto& res1, const auto& res2)
 		{

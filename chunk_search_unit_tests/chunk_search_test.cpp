@@ -408,5 +408,31 @@ namespace chunk_search_unit_tests
 
 			Assert::AreEqual(long(1), long(std::distance(haystack.cbegin(), found.end)));
 		}
-	};
+
+        TEST_METHOD(ReturnsIteratorToStartOfPartialMatchAtEnd)
+        {
+            chunk_search<> cs{ "cde" };
+
+            std::string haystack{ "abc" };
+            auto found = cs.search(haystack.cbegin(), haystack.cend());
+
+            Assert::AreEqual(long(2), long(std::distance(haystack.cbegin(), found.start)));
+
+            Assert::AreEqual(long(3), long(std::distance(haystack.cbegin(), found.end)));
+            Assert::AreEqual(size_t(0), found.match_length);
+        }
+
+        TEST_METHOD(ReturnsIteratorToEndOfHaystackIfPartialMatchIsInMiddle)
+        {
+            chunk_search<> cs{ "cde" };
+
+            std::string haystack{ "abce" };
+            auto found = cs.search(haystack.cbegin(), haystack.cend());
+
+            Assert::AreEqual(long(4), long(std::distance(haystack.cbegin(), found.start)));
+
+            Assert::AreEqual(long(4), long(std::distance(haystack.cbegin(), found.end)));
+            Assert::AreEqual(size_t(0), found.match_length);
+        }
+    };
 }

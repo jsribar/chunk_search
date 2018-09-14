@@ -26,11 +26,13 @@ template <typename ForwardIterator>
 struct chunk_search_result
 {
     size_t match_length;
+    ForwardIterator start;
     ForwardIterator end;
 
-    chunk_search_result(size_t ml, ForwardIterator it)
+    chunk_search_result(size_t ml, ForwardIterator start, ForwardIterator end)
         : match_length(ml)
-        , end(it)
+        , start(start)
+        , end(end)
     {}
 };
 
@@ -67,7 +69,7 @@ public:
 	{
 		// if search pattern is empty, return immediately
 		if (pattern_m.begin() == pattern_m.end())
-            return chunk_search_result<ForwardIterator>{ 0, haystack_first };
+            return chunk_search_result<ForwardIterator>{ 0, haystack_first, haystack_first };
 		return partial_search(haystack_first, haystack_last);
 	}
 
@@ -85,12 +87,13 @@ private:
 			typename T::const_iterator pattern_it = partial_match_end_m;
 			while (*haystack_it == *pattern_it)
 			{
+                ForwardIterator found_haystack = haystack_it;
 				++pattern_it;
 				++haystack_it;
 				++match_length_m;
 				if (pattern_it == pattern_m.end())
 				{
-                    const auto& result = chunk_search_result<ForwardIterator>{ match_length_m, haystack_it };
+                    const auto& result = chunk_search_result<ForwardIterator>{ match_length_m, haystack_first, haystack_it };
 					partial_match_end_m = pattern_m.begin(); // reset if someone wants to continue the search
 					match_length_m = 0;
 					return result;
@@ -98,7 +101,7 @@ private:
 				if (haystack_it == haystack_last)
 				{
 					partial_match_end_m = pattern_it; // partial match, remember where stopped to continue on in the next chunk
-                    return chunk_search_result<ForwardIterator>{ 0, haystack_last };
+                    return chunk_search_result<ForwardIterator>{ 0, found_haystack, haystack_last };
 				}
 			}
 			// if a part was found in previous haystack, then matching part of previous haystack is actually in search pattern
@@ -113,7 +116,7 @@ private:
 			partial_match_end_m = pattern_m.begin();
 			match_length_m = 0;
 		}
-        return chunk_search_result<ForwardIterator>{ 0, haystack_last };
+        return chunk_search_result<ForwardIterator>{ 0, haystack_last, haystack_last };
 	}
 
 	bool search_inside_pattern()
